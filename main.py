@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from threading import Thread
-from thread import start_new_thread
+from _thread import start_new_thread
 
 class Data:
     def __init__(self):
@@ -10,6 +10,7 @@ class Layer(ABC, Thread):
     '''Abstract class for Layer'''
 
     def __init__(self):
+        Thread.__init__(self)
         self._gate_top = None
         self._gate_down = None
         self._data = None
@@ -42,7 +43,6 @@ class Layer(ABC, Thread):
     def receive_down(self, data):
         raise NotImplementedError
 
-    @abstractmethod
     def set_gate(self, top=None, down=None):
         ''' gaters setter'''
         self._gate_top = top
@@ -73,31 +73,35 @@ class Gate():
 
 class Physical(Layer):
     '''Physical Layer'''
-    
+    def __init__(self, channel):
+        Layer.__init__(self)
+
+        self._channel = channel
+
     def send_down(self):
-        self._gate.move_down(self._data)
+        self._gate_down.move_down(self._data)
 
     def send_up(self):
-        self._gate.move_up(self._data)
+        self._gate_top.move_up(self._data)
 
     def receive_up(self, data):
         self._data = data
 
     def receive_down(self, data):
         self.data = data
-    
+
     def process_data(self):
         raise NotImplementedError
 
     def run(self):
-        start_new_thread(self._listen)
-        start_new_thread(self._speak)
+        start_new_thread(self._listen, ('Physical Listener', 1))
+        start_new_thread(self._speak, ('Physical Speaker', 1))
         while True:
             pass
-    def _listen(self):
+    def _listen(self, thread_name, delay):
         raise NotImplementedError
 
-    def _speak(self):
+    def _speak(self, thread_name, delay):
         raise NotImplementedError
 if '__main__' == __name__:
     layer = Physical()
