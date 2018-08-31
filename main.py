@@ -1,12 +1,30 @@
 from abc import ABC, abstractmethod
+from threading import Thread
+from thread import start_new_thread
 
-class Layer(ABC):
+class Data:
+    def __init__(self):
+        self.header = ""
+        self.data = ""
+class Layer(ABC, Thread):
     '''Abstract class for Layer'''
 
     def __init__(self):
         self._gate_top = None
         self._gate_down = None
         self._data = None
+    
+    @property
+    def data(self):
+        return self._data
+
+    @data.getter
+    def data(self):
+        return self._data
+
+    @data.setter
+    def data(self, data):
+        self._data = data
 
     @abstractmethod
     def send_down(self):
@@ -27,10 +45,15 @@ class Layer(ABC):
     @abstractmethod
     def set_gate(self, top=None, down=None):
         ''' gaters setter'''
-        raise NotImplementedError
+        self._gate_top = top
+        self._gate_down = down
     
     @abstractmethod
     def process_data(self):
+        raise NotImplementedError
+    
+    @abstractmethod
+    def run(self):
         raise NotImplementedError
 
 class Gate():
@@ -50,22 +73,34 @@ class Gate():
 
 class Physical(Layer):
     '''Physical Layer'''
-
+    
     def send_down(self):
-        raise NotImplementedError
+        self._gate.move_down(self._data)
 
     def send_up(self):
-        raise NotImplementedError
+        self._gate.move_up(self._data)
 
     def receive_up(self, data):
-        raise NotImplementedError
+        self._data = data
 
     def receive_down(self, data):
-        raise NotImplementedError
-
-    def set_gate(self, top=None, down=None):
-        raise NotImplementedError
+        self.data = data
     
     def process_data(self):
         raise NotImplementedError
+
+    def run(self):
+        start_new_thread(self._listen)
+        start_new_thread(self._speak)
+        while True:
+            pass
+    def _listen(self):
+        raise NotImplementedError
+
+    def _speak(self):
+        raise NotImplementedError
+if '__main__' == __name__:
+    layer = Physical()
+    layer.data = Data()
+    layer.start()
 
