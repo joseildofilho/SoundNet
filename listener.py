@@ -3,7 +3,7 @@ from numpy import fromstring, int32
 
 
 class Listener:
-    def __init__(self, size_message, frame_rate, threshold=0.5, channels=3, channel_min=1000, channel_max=9000):
+    def __init__(self, size_message=44100, frame_rate=44100):
         self._size_message = size_message
         self._frame_rate = frame_rate
         self._paudio = pyaudio.PyAudio()
