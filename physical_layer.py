@@ -5,7 +5,7 @@ from numpy import sin, pi, arange, float32
 
 import time
 
-from Speaker import Speaker
+from speaker import Speaker
 from decoder import Decoder
 from layer import Layer
 

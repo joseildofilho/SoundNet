@@ -48,7 +48,7 @@ class Decoder(Thread):
 
     @staticmethod
     def _remove_protocol(data):
-        return data[:-len(MESSAGE_IN_OUT_PROTOCOL)]
+        return data[:-(len(MESSAGE_IN_OUT_PROTOCOL) + 1)]
 
     def run(self):
         message = ''
@@ -63,6 +63,7 @@ class Decoder(Thread):
             elif self._ready_to_receive(message):
                 receiving = False
                 self._messages.append(self._remove_protocol(message))
+                print('message stored %s' % self._remove_protocol(message))
                 print('stop Recieving')
             elif len(message) >= self._size_buffer:
                 message = ''
