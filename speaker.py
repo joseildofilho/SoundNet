@@ -5,7 +5,7 @@ import pyaudio
 from numpy import arange, sin, pi, zeros, float32
 
 class Speaker(Thread):
-    def __init__(self, size_message, frame_rate):
+    def __init__(self, size_message=44100, frame_rate=44100):
         Thread.__init__(self)
 
         self._size_message = size_message
@@ -22,13 +22,15 @@ class Speaker(Thread):
         self._out = Semaphore(0)
         self._data = None
 
+        self.start()
+
     def speak(self, signal):
         self._in.acquire()
         self._data = signal
         self._out.release()
 
     def run(self):
-        fill = chr(0) * self._size_message * 2
+        fill = zeros(self._size_message)
         while True:
             if self._data is None:
                 self._stream.write(fill)
