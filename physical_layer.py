@@ -1,5 +1,5 @@
 from asyncio import Queue
-from threading import  Lock
+from threading import Lock
 
 from numpy import sin, pi, arange, float32
 
@@ -13,13 +13,17 @@ import soundcard as sc
 
 LISTENER = sc.default_microphone()
 
-calculate_channel = lambda max_frequency, bit_len: lambda channel: int((bit_len * channel / max_frequency) - 1)
+
+def calculate_channel(max_frequency, bit_len):
+    return lambda channel: int((bit_len * channel / max_frequency) - 1)
+
 
 FRAME_RATE = 44100
 FREQ = 200
 DURATION = 1
 
 SIGNAL = (sin(2 * pi * arange(FRAME_RATE * DURATION) * FREQ / FRAME_RATE)).astype(float32)
+
 
 class Physical(Layer):
     '''Physical Layer'''
@@ -36,6 +40,7 @@ class Physical(Layer):
 
         if auto_start:
             self.start()
+
     def send_down(self):
         self._gate_down.move_down(self._data)
 
@@ -57,7 +62,7 @@ class Physical(Layer):
         while True:
             if not self._queue_data.empty():
                 aux = self._queue_data.get_nowait()
-                print('Starting to send: %s'%aux)
+                print('Starting to send: %s' % aux)
                 for sig in aux:
                     if int(sig):
                         self._speaker.speak(SIGNAL)
