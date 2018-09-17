@@ -6,7 +6,7 @@ from numpy import sin, pi, arange, float32
 import time
 
 from speaker import Speaker
-from decoder import Decoder
+from physical_decoder import Decoder
 from layer import Layer
 
 import soundcard as sc
