@@ -30,11 +30,7 @@ class Speaker(Thread):
         self._out.release()
 
     def run(self):
-        fill = zeros(self._size_message)
         while True:
-            if self._data is None:
-                self._stream.write(fill)
-            else:
-                self._out.acquire()
-                self._stream.write(self._data)
-                self._in.release()
+            self._out.acquire()
+            self._stream.write(self._data)
+            self._in.release()
