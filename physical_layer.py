@@ -9,10 +9,6 @@ from speaker import Speaker
 from physical_decoder import Decoder
 from layer import Layer
 
-import soundcard as sc
-
-LISTENER = sc.default_microphone()
-
 
 def calculate_channel(max_frequency, bit_len):
     return lambda channel: int((bit_len * channel / max_frequency) - 1)
