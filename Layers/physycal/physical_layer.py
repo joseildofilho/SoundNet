@@ -9,7 +9,6 @@ from speaker import Speaker
 from physical_decoder import Decoder
 from layer import Layer
 
-
 def calculate_channel(max_frequency, bit_len):
     return lambda channel: int((bit_len * channel / max_frequency) - 1)
 

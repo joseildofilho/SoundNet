@@ -57,5 +57,4 @@ class Decoder(Thread):
         while True:
             bit = self._listen()
             message += self._decode(bit)
-            time.sleep(self._tick + self._adjust)
             print(message)

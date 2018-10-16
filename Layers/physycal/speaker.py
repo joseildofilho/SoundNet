@@ -15,8 +15,7 @@ class Speaker(Thread):
         self._stream = self._paudio.open(format=pyaudio.paFloat32,
                                          channels=1,
                                          rate=frame_rate,
-                                         output=True,
-                                         frames_per_buffer=1)
+                                         output=True)
         self._stream.start_stream()
         self._in = Semaphore(1)
         self._out = Semaphore(0)
