@@ -2,22 +2,18 @@ from asyncio import Queue
 from threading import Lock, Thread
 
 from numpy import sin, pi, arange, float32
+import numpy as np
 
-import time
+import sounddevice as sd
 
+from Layers.physycal.physical_encoder import PhysicalEncoder
 from Layers.physycal.speaker import Speaker
 from Layers.physycal.physical_decoder import Decoder
 from Layers.layer import Layer
 
-def calculate_channel(max_frequency, bit_len):
-    return lambda channel: int((bit_len * channel / max_frequency) - 1)
+import time
 
-
-FRAME_RATE = 44100
-FREQ = 200
-DURATION = 1
-
-SIGNAL = (sin(2 * pi * arange(FRAME_RATE * DURATION) * FREQ / FRAME_RATE)).astype(float32)
+from constants import FRAME_RATE
 
 
 class Physical(Layer, Thread):
@@ -28,12 +24,12 @@ class Physical(Layer, Thread):
 
         self._data_link_mediator = None
 
-        self._speaker = Speaker()
-        self._decoder = Decoder(tick=DURATION)
+        self._decoder = Decoder()
+        self._encoder = PhysicalEncoder()
 
-        self._queue_data = Queue()
+        self._words = []
 
-        self._entry_lock = Lock()
+        self.paused = False
 
         if auto_start:
             self.start()
@@ -42,23 +38,22 @@ class Physical(Layer, Thread):
         self._data_link_mediator = mediator
 
     def get_word(self):
-        return self._decoder.get_word()
+        if len(self._words) != 0:
+            return self._words.pop(0)
+        return np.array([])
 
     def send_word(self, data):
-        self._process_data(data)
+        self._encoder.send(data)
 
-    def _process_data(self, data):
-        self._entry_lock.acquire()
-        self._queue_data.put_nowait(data)
-        self._entry_lock.release()
+    def _listen(self):
+        return sd.rec(FRAME_RATE, channels=1, blocking=True)[:, 0]
 
     def run(self):
         while True:
-            if not self._queue_data.empty():
-                aux = self._queue_data.get_nowait()
-                print('Starting to send: %s' % aux)
-                for sig in aux:
-                    if int(sig):
-                        self._speaker.speak(SIGNAL)
-                    time.sleep(DURATION)
-                self._queue_data.task_done()
+            #while self.paused:
+            #    time.sleep(2)
+            noise = self._listen()
+            self._decoder.decode(noise)
+            #word = self._decoder.get_word()
+            #if word.size:
+            #    self._words.append(word)
