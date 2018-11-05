@@ -7,7 +7,6 @@ import numpy as np
 import sounddevice as sd
 
 from Layers.physycal.physical_encoder import PhysicalEncoder
-from Layers.physycal.speaker import Speaker
 from Layers.physycal.physical_decoder import Decoder
 from Layers.layer import Layer
 
@@ -24,7 +23,7 @@ class Physical(Layer, Thread):
 
         self._data_link_mediator = None
 
-        self._decoder = Decoder(Truet stauso)
+        self._decoder = Decoder(True)
         self._encoder = PhysicalEncoder()
 
         self._words = []
