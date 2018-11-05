@@ -68,12 +68,13 @@ class DataLink(Layer):
     def run(self):
         while True:
             if self._token:
-                for frame in self._frames:
+                for index, frame in enumerate(self._frames):
                     for word in range(0,FRAME_SIZE, WORD_SIZE):
                         print(word)
                         self._send_word(frame[word:word + WORD_SIZE])
+                    del self._frames[index]
             word = self._get_word()
-            if len(word) != 0 and MESSAGE_START in word:
+            if word.size != 0 and MESSAGE_START in word:
                 word = word[word.index(MESSAGE_START):]
                 for i in range((FRAME_SIZE//WORD_SIZE)):
                     word += self._get_word()
@@ -82,5 +83,3 @@ class DataLink(Layer):
                 if self._validate_frame(frame):
                     frame = DataLink._remove_message_flag(frame)
                     self._protocol(frame)
-
-

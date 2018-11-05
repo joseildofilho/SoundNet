@@ -26,6 +26,6 @@ if '__main__' == __name__:
 
 
     stack1_DL._token = True
-    time.sleep(1)
-#    stack1_DL.send_data(data)
+    time.sleep(5)
+    stack1_DL.send_data(data)
 

@@ -16,5 +16,7 @@ class PhysicalEncoder(Thread):
         Thread.__init__(self)
 
     def send(self, word):
+        print("sending word:", word)
+        time.sleep(5)
         x = np.concatenate([PHYSICAL_SIGNAL, np.repeat(word, self._REPEAT) * SIGNAL_PORTER])
         sd.play(x, FRAME_RATE, blocking=True)

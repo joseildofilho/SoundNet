@@ -24,7 +24,7 @@ class Physical(Layer, Thread):
 
         self._data_link_mediator = None
 
-        self._decoder = Decoder()
+        self._decoder = Decoder(Truet stauso)
         self._encoder = PhysicalEncoder()
 
         self._words = []
