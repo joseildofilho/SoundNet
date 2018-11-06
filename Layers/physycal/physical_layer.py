@@ -42,7 +42,7 @@ class Physical(Layer, Thread):
         self._decoder.pause()
         self.paused = True
 
-    def set_mediator(self, mediator):
+    def set_physical_DL_mediator(self, mediator):
         self._data_link_mediator = mediator
 
     def get_word(self):

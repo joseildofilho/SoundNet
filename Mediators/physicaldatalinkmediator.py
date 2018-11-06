@@ -2,10 +2,10 @@ class PhysicalDataLinkMediator():
 
     def __init__(self, data_link, physical):
         self._data_link = data_link
-        self._data_link.set_mediator(self)
+        self._data_link.set_physical_DL_mediator(self)
 
         self._physical = physical
-        self._physical.set_mediator(self)
+        self._physical.set_physical_DL_mediator(self)
 
     def send_word(self, data):
         """

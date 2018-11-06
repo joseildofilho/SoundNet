@@ -10,6 +10,7 @@ MESSAGE_END = '101'
 class DataLink(Layer):
     def __init__(self, id):
         Thread.__init__(self)
+        self._network_mediator = None
         self._physical_mediator = None
         self._token = False
         self._id = id
@@ -17,8 +18,11 @@ class DataLink(Layer):
         self._frames_coming = []
         self._build_frame_buffer = np.array([])
 
-    def set_mediator(self, mediator):
+    def set_physical_DL_mediator(self, mediator):
         self._physical_mediator = mediator
+
+    def set_mediator_DL_network(self, mediator):
+        self._network_mediator = mediator
 
     def _send_word(self, word):
         self._physical_mediator.send_word(word)
@@ -27,10 +31,12 @@ class DataLink(Layer):
     def _get_word(self):
         return self._physical_mediator.get_word()
 
-    def send_data(self, data):
+    def _send_data(self, data):
+        data = np.concatenate([[int(i) for i in MESSAGE_START], [0,0], data, [int(i) for i in MESSAGE_END]])
+        print(len(data))
         self._frames_going.append(data)
 
-    def get_data(self):
+    def _get_data(self):
         if self._frames_coming:
             return self._frames_coming.pop(0)
 
@@ -92,9 +98,14 @@ class DataLink(Layer):
         elif self._build_frame_buffer.size == FRAME_SIZE:
             print('new frame')
             self._build_frame_buffer = DataLink._remove_message_flag(self._build_frame_buffer)
-            self._build_frame_buffer = self._protocol(self._build_frame_buffer)
-            self._frames_coming.append(self._build_frame_buffer)
+            if self._network_mediator.is_ours(self._build_frame_buffer[2:]):
+                self._build_frame_buffer = self._protocol(self._build_frame_buffer)
+                self._frames_coming.append(self._build_frame_buffer)
+                print('frame to me')
+            else:
+                print('this frame it is not mine')
             self._build_frame_buffer = np.array([])
+
         # if word.size != 0 and MESSAGE_START in word:
         #     word = word[word.index(MESSAGE_START):]
         #     for i in range(FRAME_SIZE//WORD_SIZE):
