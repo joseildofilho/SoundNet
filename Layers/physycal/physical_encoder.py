@@ -1,9 +1,7 @@
 from threading import Thread
 import sounddevice as sd
 import numpy as np
-import pyaudio as pa
 import time
-import matplotlib.pyplot as plt
 
 from constants import FRAME_RATE, WORD_SIZE, SIGNAL_PORTER, PHYSICAL_SIGNAL, DURATION
 
@@ -13,7 +11,7 @@ class PhysicalEncoder(Thread):
     _REPEAT = FRAME_RATE//(WORD_SIZE / DURATION)
 
     def __init__(self):
-        Thread.__init__(self)
+        pass
 
     def send(self, word):
         print("sending word:", word)
