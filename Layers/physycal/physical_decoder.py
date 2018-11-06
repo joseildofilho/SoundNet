@@ -1,7 +1,7 @@
 import numpy as np
 from threading import Thread, Lock
 
-from constants import WORD_SIZE, FRAME_RATE, PHYSICAL_SIGNAL
+from constants import FRAME_RATE
 
 import matplotlib.pyplot as plt
 
@@ -29,7 +29,6 @@ class Decoder(Thread):
 
     def _filter_signal(self):
         self._lock.acquire()
-        #self._jobs = np.nan_to_num(self._jobs)
         self._jobs = np.where(abs(self._jobs) > self._threshold, self._jobs, 0)
         self._lock.release()
 
