@@ -20,3 +20,9 @@ class PhysicalDataLinkMediator():
         :return: a word with the listened bits
         """
         return self._physical.get_word()
+
+    def start_listen(self):
+        self._physical.start_listen()
+
+    def pause_listen(self):
+        self._physical.pause_listen()

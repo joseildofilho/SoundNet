@@ -24,14 +24,23 @@ class Physical(Layer, Thread):
         self._data_link_mediator = None
 
         self._decoder = Decoder()
+        self._decoder.pause()
         self._encoder = PhysicalEncoder()
 
         self._words = []
 
-        self.paused = False
+        self.paused = True
 
         if auto_start:
             self.start()
+
+    def start_listen(self):
+        self._decoder.resume()
+        self.paused = False
+
+    def pause_listen(self):
+        self._decoder.pause()
+        self.paused = True
 
     def set_mediator(self, mediator):
         self._data_link_mediator = mediator
@@ -49,10 +58,10 @@ class Physical(Layer, Thread):
 
     def run(self):
         while True:
-            #while self.paused:
-            #    time.sleep(2)
+            while self.paused:
+                time.sleep(2)
             noise = self._listen()
             self._decoder.decode(noise)
-            #word = self._decoder.get_word()
-            #if word.size:
-            #    self._words.append(word)
+            word = self._decoder.get_word()
+            if word.size:
+                self._words.append(word)

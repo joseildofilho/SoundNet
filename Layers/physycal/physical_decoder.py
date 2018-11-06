@@ -1,5 +1,5 @@
 import numpy as np
-from threading import Thread, Lock
+from threading import Thread, Lock, Semaphore
 
 from constants import FRAME_RATE
 
@@ -16,6 +16,7 @@ class Decoder(Thread):
         self._threshold = 0.3
         self._step = 4000
         self._word_buffer = ""
+        self._pause = Semaphore(1)
         self.start()
 
     def decode(self, bits):
@@ -26,6 +27,12 @@ class Decoder(Thread):
         if padding.size:
             return padding[0]
         return 0
+
+    def pause(self):
+        self._pause.acquire(blocking=False)
+
+    def resume(self):
+        self._pause.release()
 
     def _filter_signal(self):
         self._lock.acquire()
@@ -66,7 +73,7 @@ class Decoder(Thread):
                     self._shift_jobs_a_step()
                     self._shift_jobs_a_step()
                     for i in range(0, 8):
-                        y.append(self._jobs[0: self._step][1950:2050].max())
+                        y.append(self._jobs[0: self._step][1900:2100].max())
                         self._shift_jobs_a_step()
                     self._add_word(np.where(np.array(y) > .3, 1, 0))
                 else:
@@ -84,6 +91,7 @@ class Decoder(Thread):
         plt.ion()
         print('starting to listen')
         while True:
+            self._pause.acquire(blocking=True)
             if self._jobs.size:
                  self._decode()
             if self._signals:
@@ -97,6 +105,7 @@ class Decoder(Thread):
                     plt.show()
                     plt.pause(0.00001)
                 self._lock.release()
+            self._pause.release()
 
     def _clear_word_buffer(self):
         self._word_buffer = ""
