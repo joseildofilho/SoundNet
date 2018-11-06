@@ -23,7 +23,7 @@ class Physical(Layer, Thread):
 
         self._data_link_mediator = None
 
-        self._decoder = Decoder(True)
+        self._decoder = Decoder()
         self._encoder = PhysicalEncoder()
 
         self._words = []
